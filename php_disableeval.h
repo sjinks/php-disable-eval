@@ -38,6 +38,7 @@ ZEND_BEGIN_MODULE_GLOBALS(de)
 	zend_bool enabled;
 	zend_bool watch_cf;
 	zend_long mode;
+	user_opcode_handler_t prev_eval_handler;
 ZEND_END_MODULE_GLOBALS(de)
 
 DE_VISIBILITY_HIDDEN extern ZEND_DECLARE_MODULE_GLOBALS(de);

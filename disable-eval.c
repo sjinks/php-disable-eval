@@ -75,6 +75,10 @@ static int op_ZEND_INCLUDE_OR_EVAL(zend_execute_data* execute_data)
         }
     }
 
+    if (DE_G(prev_eval_handler)) {
+        return DE_G(prev_eval_handler)(execute_data);
+    }
+
     return ZEND_USER_OPCODE_DISPATCH;
 }
 
@@ -92,6 +96,7 @@ static PHP_MINIT_FUNCTION(de)
     REGISTER_INI_ENTRIES();
 
     if (DE_G(enabled)) {
+        DE_G(prev_eval_handler) = zend_get_user_opcode_handler(ZEND_INCLUDE_OR_EVAL);
         if (zend_set_user_opcode_handler(ZEND_INCLUDE_OR_EVAL, op_ZEND_INCLUDE_OR_EVAL) == FAILURE) {
             zend_error(E_CORE_WARNING, "Unable to install a handler for ZEND_INCLUDE_OR_EVAL");
         }
