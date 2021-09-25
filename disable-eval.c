@@ -1,7 +1,6 @@
 #include "php_disableeval.h"
 #include <ext/standard/info.h>
 #include <Zend/zend_exceptions.h>
-// #include <Zend/zend_vm_execute.h>
 
 ZEND_DECLARE_MODULE_GLOBALS(de);
 
@@ -66,14 +65,12 @@ static PHP_FUNCTION(create_function)
 
 static int op_ZEND_INCLUDE_OR_EVAL(zend_execute_data* execute_data)
 {
-    if (execute_data->opline->extended_value == ZEND_EVAL && DE_G(mode) != MODE_IGNORE) {
-        if (execute_data->opline->result_type & (IS_VAR | IS_TMP_VAR)) {
-            ZVAL_UNDEF(EX_VAR(execute_data->opline->result.var));
-        }
-
+    const zend_op* opline = execute_data->opline;
+    if (opline->extended_value == ZEND_EVAL && DE_G(mode) != MODE_IGNORE) {
         complain("eval");
 
-        if (EG(exception)) {
+        if (EG(exception) && (opline->result_type & (IS_VAR | IS_TMP_VAR))) {
+            ZVAL_UNDEF(EX_VAR(opline->result.var));
             return ZEND_USER_OPCODE_CONTINUE;
         }
     }
