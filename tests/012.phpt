@@ -3,7 +3,7 @@ Test that the extension can issue a loud warning on create_function()
 --INI--
 disableeval.mode = 3
 --SKIPIF--
-<?php require 'skipif.inc'; ?>
+<?php require 'skipif-cf.inc'; ?>
 --FILE--
 <?php
 error_reporting(error_reporting() & ~E_DEPRECATED);

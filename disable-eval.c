@@ -16,10 +16,15 @@ static int complain(const char* function)
             return 0;
 
         case MODE_THROW: {
+#if PHP_VERSION_ID >= 80000
+            zend_string* message = zend_strpprintf(0, "%s() is not allowed", function);
+            zend_throw_error_exception(zend_ce_error_exception, message, 0, E_ERROR);
+#else
             char* message;
             zend_spprintf(&message, 0, "%s() is not allowed", function);
             zend_throw_error_exception(zend_ce_error_exception, message, 0, E_ERROR);
             efree(message);
+#endif
             return 1;
         }
 

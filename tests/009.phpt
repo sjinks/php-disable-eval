@@ -3,7 +3,7 @@ Test that the extension can throw exceptions on create_function()
 --INI--
 disableeval.mode = 1
 --SKIPIF--
-<?php require 'skipif.inc'; ?>
+<?php require 'skipif-cf.inc'; ?>
 --FILE--
 <?php
 error_reporting(error_reporting() & ~E_DEPRECATED);
