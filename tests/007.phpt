@@ -9,4 +9,4 @@ disableeval.mode = 4
 echo eval('return 2+2;'), PHP_EOL;
 ?>
 --EXPECTF--
-Fatal error: eval() is not allowed in %s(%d) : eval()'d code on line %d
+Fatal error: eval() is not allowed in %s on line %d

@@ -7,9 +7,6 @@
 
 #define PHP_DISABLEEVAL_EXTNAME     "disableeval"
 #define PHP_DISABLEEVAL_EXTVER      "0.1"
-#define PHP_DISABLEEVAL_AUTHOR      "Volodymyr Kolesnykov"
-#define PHP_DISABLEEVAL_URL         "https://wildwolf.name/"
-#define PHP_DISABLEEVAL_COPYRIGHT   "Copyright (c) 2021"
 
 #ifdef HAVE_CONFIG_H
 #   include "config.h"
