@@ -7,9 +7,6 @@
 
 #define PHP_DISABLEEVAL_EXTNAME     "disableeval"
 #define PHP_DISABLEEVAL_EXTVER      "0.1"
-#define PHP_DISABLEEVAL_AUTHOR      "Volodymyr Kolesnykov"
-#define PHP_DISABLEEVAL_URL         "https://wildwolf.name/"
-#define PHP_DISABLEEVAL_COPYRIGHT   "Copyright (c) 2021"
 
 #ifdef HAVE_CONFIG_H
 #   include "config.h"
@@ -41,6 +38,7 @@ ZEND_BEGIN_MODULE_GLOBALS(de)
 	zend_bool enabled;
 	zend_bool watch_cf;
 	zend_long mode;
+	user_opcode_handler_t prev_eval_handler;
 ZEND_END_MODULE_GLOBALS(de)
 
 DE_VISIBILITY_HIDDEN extern ZEND_DECLARE_MODULE_GLOBALS(de);

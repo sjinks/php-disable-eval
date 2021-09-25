@@ -9,5 +9,5 @@ disableeval.mode = 2
 echo eval('return 2+2;'), PHP_EOL;
 ?>
 --EXPECTF--
-Warning: eval() is dangerous in %s(%d) : eval()'d code on line %d
+Warning: eval() is dangerous in %s on line %d
 4
