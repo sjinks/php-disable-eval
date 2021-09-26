@@ -6,39 +6,46 @@ ZEND_DECLARE_MODULE_GLOBALS(de);
 
 static zend_module_entry de_module_entry;
 
+static void throw_exception(const char* function)
+{
+#if PHP_VERSION_ID >= 80000
+    zend_string* message = zend_strpprintf(0, "%s() is not allowed", function);
+    zend_throw_error_exception(zend_ce_error_exception, message, 0, E_ERROR);
+#else
+    char* message;
+    zend_spprintf(&message, 0, "%s() is not allowed", function);
+    zend_throw_error_exception(zend_ce_error_exception, message, 0, E_ERROR);
+    efree(message);
+#endif
+}
+
+static void scream(const char* function)
+{
+    int old_reporting = EG(error_reporting);
+    if ((old_reporting & E_WARNING) == 0) {
+        EG(error_reporting) |= E_WARNING;
+    }
+
+    zend_error(E_WARNING, "%s() is dangerous", function);
+    EG(error_reporting) = old_reporting;
+}
+
 static void complain(const char* function)
 {
     switch (DE_G(mode)) {
-        case MODE_THROW: {
-#if PHP_VERSION_ID >= 80000
-            zend_string* message = zend_strpprintf(0, "%s() is not allowed", function);
-            zend_throw_error_exception(zend_ce_error_exception, message, 0, E_ERROR);
-#else
-            char* message;
-            zend_spprintf(&message, 0, "%s() is not allowed", function);
-            zend_throw_error_exception(zend_ce_error_exception, message, 0, E_ERROR);
-            efree(message);
-#endif
+        case MODE_THROW:
+            throw_exception(function);
             break;
-        }
 
         case MODE_WARN:
             zend_error(E_WARNING, "%s() is dangerous", function);
             break;
 
-        case MODE_SCREAM: {
-            int old_reporting = EG(error_reporting);
-            if ((old_reporting & E_WARNING) == 0) {
-                EG(error_reporting) |= E_WARNING;
-            }
-
-            zend_error(E_WARNING, "%s() is dangerous", function);
-            EG(error_reporting) = old_reporting;
+        case MODE_SCREAM:
+            scream(function);
             break;
-        }
 
         default:
-        case MODE_BAILOUT:
             zend_error(E_ERROR, "%s() is not allowed", function);
             break ;/* NOT REACHED */
     }
