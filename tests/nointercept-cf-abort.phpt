@@ -1,9 +1,10 @@
 --TEST--
 Test that the extension can abort on create_function()
---INI--
-disableeval.mode = 4
 --SKIPIF--
 <?php require 'skipif8.inc'; ?>
+--INI--
+disableeval.mode = 4
+disableeval.intercept_compile_string = 0
 --FILE--
 <?php
 error_reporting(error_reporting() & ~E_DEPRECATED);

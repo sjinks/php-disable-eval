@@ -1,9 +1,10 @@
 --TEST--
 Test that exceptions thrown by the extension can be caught
---INI--
-disableeval.mode = 1
 --SKIPIF--
 <?php require 'skipif.inc'; ?>
+--INI--
+disableeval.mode = 1
+disableeval.intercept_compile_string = 0
 --FILE--
 <?php
 try {

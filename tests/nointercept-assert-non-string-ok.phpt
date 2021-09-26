@@ -6,6 +6,7 @@ Test that non-string assertions are allowed
 zend.assertions  = 1
 assert.exception = 1
 disableeval.mode = 1
+disableeval.intercept_compile_string = 0
 --FILE--
 <?php
 assert(false);

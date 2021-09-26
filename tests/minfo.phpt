@@ -7,4 +7,4 @@ Test module info
 phpinfo(INFO_MODULES);
 ?>
 --EXPECTREGEX--
-.*Disable Eval Module\s+=>\s+enabled.*
+.*Disable eval\(\) Module\s+=>\s+enabled.*

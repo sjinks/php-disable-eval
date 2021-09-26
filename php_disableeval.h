@@ -25,23 +25,30 @@
 
 #define phpext_disableeval_ptr  &disableeval_module_entry
 
+#if PHP_VERSION_ID < 80000
+typedef zend_op_array* (*de_zend_compile_string)(zval*, char*);
+#else
+typedef zend_op_array* (*de_zend_compile_string)(zend_string*, const char*);
+#endif
+
 ZEND_BEGIN_MODULE_GLOBALS(de)
 #if PHP_VERSION_ID < 80000
 	zif_handler orig_create_function;
 	zif_handler orig_assert;
 #endif
 	user_opcode_handler_t prev_eval_handler;
+	de_zend_compile_string zend_compile_string;
 	zend_long mode;
 	zend_bool enabled;
+	zend_bool aggressive;
+	zend_bool intercept_compile_string;
 #if PHP_VERSION_ID < 80000
-	zend_bool watch_cf;
 	zend_bool watch_assert;
 #endif
 ZEND_END_MODULE_GLOBALS(de)
 
 DE_VISIBILITY_HIDDEN extern ZEND_DECLARE_MODULE_GLOBALS(de);
 
-#define MODE_IGNORE  0
 #define MODE_THROW   1
 #define MODE_WARN    2
 #define MODE_SCREAM  3

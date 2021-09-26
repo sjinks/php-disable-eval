@@ -1,9 +1,10 @@
 --TEST--
 Test that the extension can abort on eval()
---INI--
-disableeval.mode = 4
 --SKIPIF--
 <?php require 'skipif.inc'; ?>
+--INI--
+disableeval.mode = 4
+disableeval.intercept_compile_string = 0
 --FILE--
 <?php
 echo eval('return 2+2;'), PHP_EOL;
