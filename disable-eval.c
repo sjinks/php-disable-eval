@@ -47,7 +47,7 @@ static void complain(const char* function)
 
         default:
             zend_error(E_ERROR, "%s() is not allowed", function);
-            break ;/* NOT REACHED */
+            /* NOT REACHED */
     }
 }
 

@@ -1,0 +1,7 @@
+clean: clean-coverage
+
+clean-coverage:
+	-rm -rf *.gcov
+
+coverage: test
+	gcov -r -s $$(pwd) .libs/*.o

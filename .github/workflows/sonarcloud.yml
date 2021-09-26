@@ -67,12 +67,19 @@ jobs:
       - name: Run build-wrapper
         run: |
           phpize
-          ./configure
-          build-wrapper-linux-x86-64 --out-dir ${{ env.BUILD_WRAPPER_OUT_DIR }} make
+          ./configure --enable-coverage
+          build-wrapper-linux-x86-64 --out-dir ${{ env.BUILD_WRAPPER_OUT_DIR }} make coverage
+        env:
+          NO_INTERACTION: "1"
+          REPORT_EXIT_STATUS: "1"
+          TEST_PHP_EXECUTABLE: "/usr/bin/php"
 
       - name: Run sonar-scanner
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         run: |
-          sonar-scanner --define sonar.host.url="${{ env.SONAR_SERVER_URL }}" --define sonar.cfamily.build-wrapper-output="${{ env.BUILD_WRAPPER_OUT_DIR }}"
+          sonar-scanner \
+            -Dsonar.host.url="${{ env.SONAR_SERVER_URL }}" \
+            -Dsonar.cfamily.build-wrapper-output="${{ env.BUILD_WRAPPER_OUT_DIR }}" \
+            -Dsonar.cfamily.gcov.reportsPath=$(pwd)
