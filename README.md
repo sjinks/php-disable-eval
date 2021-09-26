@@ -1,5 +1,8 @@
 # php-disable-eval
 
+[![Build and Test](https://github.com/sjinks/php-disable-eval/actions/workflows/test.yml/badge.svg)](https://github.com/sjinks/php-disable-eval/actions/workflows/test.yml)
+[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=sjinks_php-disable-eval&metric=alert_status)](https://sonarcloud.io/dashboard?id=sjinks_php-disable-eval)
+
 A PHP extension to disable `eval()` and `create_function()`.
 
 ## Installation
