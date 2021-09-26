@@ -1,7 +1,7 @@
 --TEST--
 Test that the extension can ignore create_function
 --SKIPIF--
-<?php require 'skipif-cf.inc'; ?>
+<?php require 'skipif8.inc'; ?>
 --INI--
 disableeval.disallow_create_func = Off
 --FILE--

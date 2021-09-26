@@ -3,7 +3,7 @@ Test that the extension can ignore create_function()
 --INI--
 disableeval.mode = 0
 --SKIPIF--
-<?php require 'skipif-cf.inc'; ?>
+<?php require 'skipif8.inc'; ?>
 --FILE--
 <?php
 error_reporting(error_reporting() & ~E_DEPRECATED);
