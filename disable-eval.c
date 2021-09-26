@@ -195,8 +195,15 @@ static PHP_MINFO_FUNCTION(de)
     DISPLAY_INI_ENTRIES();
 }
 
+static const zend_module_dep deps[] = {
+    ZEND_MOD_CONFLICTS_EX("Xdebug", "<", "2.9.3")
+    ZEND_MOD_END
+};
+
 static zend_module_entry de_module_entry = {
-    STANDARD_MODULE_HEADER,
+    STANDARD_MODULE_HEADER_EX,
+    NULL,
+    deps,
     PHP_DISABLEEVAL_EXTNAME,
     NULL,
     PHP_MINIT(de),
