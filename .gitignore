@@ -40,3 +40,4 @@ macros.h
 /tests/*.php
 /tests/*.sh
 /tests/*.mem
+*.gcov
