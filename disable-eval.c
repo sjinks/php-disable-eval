@@ -5,7 +5,6 @@
 ZEND_DECLARE_MODULE_GLOBALS(de);
 
 static zend_module_entry de_module_entry;
-static zif_handler orig_create_function;
 
 static void complain(const char* function)
 {
@@ -55,7 +54,7 @@ static PHP_FUNCTION(create_function)
 {
     complain("create_function");
     if (!EG(exception)) {
-        (orig_create_function)(INTERNAL_FUNCTION_PARAM_PASSTHRU);
+        DE_G(orig_create_function)(INTERNAL_FUNCTION_PARAM_PASSTHRU);
     }
 }
 
@@ -82,8 +81,16 @@ static void patch_create_function()
 {
     zend_function* f = zend_hash_str_find_ptr(CG(function_table), ZEND_STRL("create_function"));
     if (f && f->type == ZEND_INTERNAL_FUNCTION && f->internal_function.handler) {
-        orig_create_function = f->internal_function.handler;
+        DE_G(orig_create_function)   = f->internal_function.handler;
         f->internal_function.handler = PHP_FN(create_function);
+    }
+}
+
+static void unpatch_create_function()
+{
+    zend_function* f = zend_hash_str_find_ptr(CG(function_table), ZEND_STRL("create_function"));
+    if (f) {
+        f->internal_function.handler = DE_G(orig_create_function);
     }
 }
 
@@ -114,7 +121,22 @@ static PHP_MINIT_FUNCTION(de)
 static PHP_MSHUTDOWN_FUNCTION(de)
 {
     UNREGISTER_INI_ENTRIES();
+
+    if (DE_G(enabled) && DE_G(mode) != MODE_IGNORE) {
+        zend_set_user_opcode_handler(ZEND_INCLUDE_OR_EVAL, NULL);
+
+        if (DE_G(watch_cf) && DE_G(orig_create_function)) {
+            unpatch_create_function();
+        }
+    }
+
     return SUCCESS;
+}
+
+static PHP_GINIT_FUNCTION(de)
+{
+    de_globals->orig_create_function = NULL;
+    de_globals->prev_eval_handler    = NULL;
 }
 
 static PHP_MINFO_FUNCTION(de)
@@ -138,7 +160,7 @@ static zend_module_entry de_module_entry = {
     PHP_MINFO(de),
     PHP_DISABLEEVAL_EXTVER,
     PHP_MODULE_GLOBALS(de),
-    NULL,
+    PHP_GINIT(de),
     NULL,
     NULL,
     STANDARD_MODULE_PROPERTIES_EX
