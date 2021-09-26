@@ -71,8 +71,11 @@ static int op_ZEND_INCLUDE_OR_EVAL(zend_execute_data* execute_data)
     if (opline->extended_value == ZEND_EVAL && DE_G(mode) != MODE_IGNORE) {
         complain("eval");
 
-        if (EG(exception) && (opline->result_type & (IS_VAR | IS_TMP_VAR))) {
-            ZVAL_UNDEF(EX_VAR(opline->result.var));
+        if (EG(exception)) {
+            if (opline->result_type & (IS_VAR | IS_TMP_VAR)) {
+                ZVAL_UNDEF(EX_VAR(opline->result.var));
+            }
+
             return ZEND_USER_OPCODE_CONTINUE;
         }
     }
