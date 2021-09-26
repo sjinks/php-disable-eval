@@ -2,8 +2,6 @@
 #define PHP_DISABLEEVAL_H
 
 #include <main/php.h>
-#include <main/php_ini.h>
-#include <Zend/zend_extensions.h>
 
 #define PHP_DISABLEEVAL_EXTNAME     "disableeval"
 #define PHP_DISABLEEVAL_EXTVER      "0.1"
@@ -26,13 +24,6 @@
 #endif
 
 #define phpext_disableeval_ptr  &disableeval_module_entry
-
-#if COMPILE_DL_DISABLEEVAL
-#   define XXX_EXTENSION_ENTRY zend_extension_entry
-zend_extension zend_extension_entry;
-#else
-DE_VISIBILITY_HIDDEN extern zend_extension de_extension_entry;
-#endif
 
 ZEND_BEGIN_MODULE_GLOBALS(de)
 	zend_bool enabled;

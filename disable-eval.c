@@ -4,15 +4,12 @@
 
 ZEND_DECLARE_MODULE_GLOBALS(de);
 
-zend_module_entry de_module_entry;
+static zend_module_entry de_module_entry;
 static zif_handler orig_create_function;
 
-static int complain(const char* function)
+static void complain(const char* function)
 {
     switch (DE_G(mode)) {
-        case MODE_IGNORE:
-            return 0;
-
         case MODE_THROW: {
 #if PHP_VERSION_ID >= 80000
             zend_string* message = zend_strpprintf(0, "%s() is not allowed", function);
@@ -23,12 +20,12 @@ static int complain(const char* function)
             zend_throw_error_exception(zend_ce_error_exception, message, 0, E_ERROR);
             efree(message);
 #endif
-            return 1;
+            break;
         }
 
         case MODE_WARN:
             zend_error(E_WARNING, "%s() is dangerous", function);
-            return 0;
+            break;
 
         case MODE_SCREAM: {
             int old_reporting = EG(error_reporting);
@@ -38,13 +35,13 @@ static int complain(const char* function)
 
             zend_error(E_WARNING, "%s() is dangerous", function);
             EG(error_reporting) = old_reporting;
-            return 0;
+            break;
         }
 
         default:
         case MODE_BAILOUT:
             zend_error(E_ERROR, "%s() is not allowed", function);
-            return 1; /* NOT REACHED */
+            break ;/* NOT REACHED */
     }
 }
 
@@ -56,11 +53,10 @@ PHP_INI_END()
 
 static PHP_FUNCTION(create_function)
 {
-    if (complain("create_function")) {
-        RETURN_NULL();
+    complain("create_function");
+    if (!EG(exception)) {
+        (orig_create_function)(INTERNAL_FUNCTION_PARAM_PASSTHRU);
     }
-
-    (orig_create_function)(INTERNAL_FUNCTION_PARAM_PASSTHRU);
 }
 
 static int op_ZEND_INCLUDE_OR_EVAL(zend_execute_data* execute_data)
@@ -95,7 +91,7 @@ static PHP_MINIT_FUNCTION(de)
 {
     REGISTER_INI_ENTRIES();
 
-    if (DE_G(enabled)) {
+    if (DE_G(enabled) && DE_G(mode) != MODE_IGNORE) {
         DE_G(prev_eval_handler) = zend_get_user_opcode_handler(ZEND_INCLUDE_OR_EVAL);
         if (zend_set_user_opcode_handler(ZEND_INCLUDE_OR_EVAL, op_ZEND_INCLUDE_OR_EVAL) == FAILURE) {
             zend_error(E_CORE_WARNING, "Unable to install a handler for ZEND_INCLUDE_OR_EVAL");
@@ -131,7 +127,7 @@ static PHP_MINFO_FUNCTION(de)
     DISPLAY_INI_ENTRIES();
 }
 
-zend_module_entry de_module_entry = {
+static zend_module_entry de_module_entry = {
     STANDARD_MODULE_HEADER,
     PHP_DISABLEEVAL_EXTNAME,
     NULL,
