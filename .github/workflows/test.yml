@@ -21,6 +21,7 @@ jobs:
           - '7.4'
           - '8.0'
           - '8.1'
+          - '8.2'
     name: "Build and Test (PHP ${{ matrix.php }}, CC: ${{ matrix.compiler.CC }})"
     runs-on: ubuntu-latest
     steps:
@@ -41,3 +42,46 @@ jobs:
         env:
           NO_INTERACTION: "1"
           REPORT_EXIT_STATUS: "1"
+
+  ci2:
+    if: ${{ !contains(github.event.head_commit.message, '[ci skip]') || github.event_name == 'workflow_dispatch' }}
+    strategy:
+      fail-fast: false
+      matrix:
+        php:
+          - '7.3'
+          - '7.4'
+          - '8.0'
+          - '8.1'
+    name: "Build and Test (PHP ${{ matrix.php }}, Zend extensions enabled"
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out the source code
+        uses: actions/checkout@v2
+
+      - name: Set up PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php }}
+          tools: none
+
+      - name: Build and install
+        run: phpize && ./configure --silent && make --silent && sudo make install
+
+      - name: Enable the extension
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php }}
+          tools: none
+          extensions: xdebug
+          ini-values: extension=disableeval.so,"xdebug.mode=develop,trace,debug"
+
+      - name: Smoke test
+        run: php -m
+
+      - name: Run tests
+        run: php run-tests.php --show-diff -d 'error_reporting=24575'
+        env:
+          NO_INTERACTION: "1"
+          REPORT_EXIT_STATUS: "1"
+          TEST_PHP_EXECUTABLE: "/usr/bin/php"
