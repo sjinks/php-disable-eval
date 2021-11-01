@@ -5,6 +5,9 @@ on:
       - "**"
   workflow_dispatch:
 
+env:
+  CFLAGS: "-O2 -g3 -Wall -Werror"
+
 jobs:
   ci:
     if: ${{ !contains(github.event.head_commit.message, '[ci skip]') || github.event_name == 'workflow_dispatch' }}
@@ -13,9 +16,7 @@ jobs:
       matrix:
         compiler:
           - CC: clang
-            CFLAGS: "-O2 -g3 -Wall -Werror -Wno-implicit-const-int-float-conversion"
           - CC: gcc
-            CFLAGS: "-O2 -g3 -Wall -Werror"
         php:
           - '7.3'
           - '7.4'
@@ -35,7 +36,7 @@ jobs:
           tools: none
 
       - name: Build
-        run: phpize && ./configure CFLAGS="${{ matrix.compiler.CFLAGS }}" CC=${{ matrix.compiler.CC }} --silent && make --silent
+        run: phpize && ./configure CC=${{ matrix.compiler.CC }} --silent && make --silent
 
       - name: Run tests
         run: make test
@@ -53,6 +54,7 @@ jobs:
           - '7.4'
           - '8.0'
           - '8.1'
+          - '8.2'
     name: "Build and Test (PHP ${{ matrix.php }}, Zend extensions enabled"
     runs-on: ubuntu-latest
     steps:
