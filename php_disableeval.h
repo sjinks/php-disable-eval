@@ -27,8 +27,10 @@
 
 #if PHP_VERSION_ID < 80000
 typedef zend_op_array* (*de_zend_compile_string)(zval*, char*);
-#else
+#elif PHP_VERSION_ID < 80200
 typedef zend_op_array* (*de_zend_compile_string)(zend_string*, const char*);
+#else
+typedef zend_op_array* (*de_zend_compile_string)(zend_string*, const char*, zend_compile_position);
 #endif
 
 ZEND_BEGIN_MODULE_GLOBALS(de)

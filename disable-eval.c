@@ -140,6 +140,9 @@ static zend_op_array* zend_compile_string_override(
 #else
     zend_string* source_string,
     const char* filename
+#if PHP_VERSION_ID >= 80200
+    , zend_compile_position position
+#endif
 #endif
 )
 {
@@ -175,7 +178,13 @@ static zend_op_array* zend_compile_string_override(
         }
     }
 
-    return DE_G(zend_compile_string)(source_string, filename);
+    return DE_G(zend_compile_string)(
+        source_string,
+        filename
+#if PHP_VERSION_ID >= 80200
+        , position
+#endif
+    );
 }
 
 static PHP_MINIT_FUNCTION(de)
