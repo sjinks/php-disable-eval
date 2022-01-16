@@ -10,6 +10,8 @@ env:
 
 jobs:
   ci:
+    permissions:
+      contents: read
     if: ${{ !contains(github.event.head_commit.message, '[ci skip]') || github.event_name == 'workflow_dispatch' }}
     strategy:
       fail-fast: false
@@ -45,6 +47,8 @@ jobs:
           REPORT_EXIT_STATUS: "1"
 
   ci2:
+    permissions:
+      contents: read
     if: ${{ !contains(github.event.head_commit.message, '[ci skip]') || github.event_name == 'workflow_dispatch' }}
     strategy:
       fail-fast: false
