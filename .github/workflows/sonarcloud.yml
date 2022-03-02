@@ -18,7 +18,7 @@ jobs:
       BUILD_WRAPPER_OUT_DIR: build_wrapper_output_directory
       PHP_VERSION: 7.4
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
         with:
           fetch-depth: 0
 
