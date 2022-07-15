@@ -29,10 +29,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Check out the source code
-        uses: actions/checkout@v3
+        uses: actions/checkout@2541b1294d2704b0964813337f33b291d3f8596b # tag=v3
 
       - name: Set up PHP
-        uses: shivammathur/setup-php@v2
+        uses: shivammathur/setup-php@3312ea6101295aeda1e702b5d3b641e9717de6d6 # tag=v2
         with:
           php-version: ${{ matrix.php }}
           tools: none
@@ -63,10 +63,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Check out the source code
-        uses: actions/checkout@v3
+        uses: actions/checkout@2541b1294d2704b0964813337f33b291d3f8596b # tag=v3
 
       - name: Set up PHP
-        uses: shivammathur/setup-php@v2
+        uses: shivammathur/setup-php@3312ea6101295aeda1e702b5d3b641e9717de6d6 # tag=v2
         with:
           php-version: ${{ matrix.php }}
           tools: none
@@ -75,7 +75,7 @@ jobs:
         run: phpize && ./configure --silent && make --silent && sudo make install
 
       - name: Enable the extension
-        uses: shivammathur/setup-php@v2
+        uses: shivammathur/setup-php@3312ea6101295aeda1e702b5d3b641e9717de6d6 # tag=v2
         with:
           php-version: ${{ matrix.php }}
           tools: none
