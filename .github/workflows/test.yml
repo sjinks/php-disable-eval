@@ -17,28 +17,28 @@ jobs:
       fail-fast: false
       matrix:
         compiler:
-          - CC: clang
-          - CC: gcc
+          - clang
+          - gcc
         php:
           - '7.3'
           - '7.4'
           - '8.0'
           - '8.1'
           - '8.2'
-    name: "Build and Test (PHP ${{ matrix.php }}, CC: ${{ matrix.compiler.CC }})"
+    name: "Build and Test (PHP ${{ matrix.php }}, CC: ${{ matrix.compiler }})"
     runs-on: ubuntu-latest
     steps:
       - name: Check out the source code
         uses: actions/checkout@2541b1294d2704b0964813337f33b291d3f8596b # tag=v3
 
       - name: Set up PHP
-        uses: shivammathur/setup-php@3312ea6101295aeda1e702b5d3b641e9717de6d6 # tag=v2
+        uses: shivammathur/setup-php@16011a795d747d5f45038f96371c3b98aec5669d # tag=v2.21.1
         with:
           php-version: ${{ matrix.php }}
           tools: none
 
       - name: Build
-        run: phpize && ./configure CC=${{ matrix.compiler.CC }} --silent && make --silent
+        run: phpize && ./configure CC=${{ matrix.compiler }} --silent && make --silent
 
       - name: Run tests
         run: make test
@@ -66,7 +66,7 @@ jobs:
         uses: actions/checkout@2541b1294d2704b0964813337f33b291d3f8596b # tag=v3
 
       - name: Set up PHP
-        uses: shivammathur/setup-php@3312ea6101295aeda1e702b5d3b641e9717de6d6 # tag=v2
+        uses: shivammathur/setup-php@16011a795d747d5f45038f96371c3b98aec5669d # tag=v2.21.1
         with:
           php-version: ${{ matrix.php }}
           tools: none
@@ -75,7 +75,7 @@ jobs:
         run: phpize && ./configure --silent && make --silent && sudo make install
 
       - name: Enable the extension
-        uses: shivammathur/setup-php@3312ea6101295aeda1e702b5d3b641e9717de6d6 # tag=v2
+        uses: shivammathur/setup-php@16011a795d747d5f45038f96371c3b98aec5669d # tag=v2.21.1
         with:
           php-version: ${{ matrix.php }}
           tools: none
