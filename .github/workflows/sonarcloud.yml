@@ -35,14 +35,14 @@ jobs:
           java-version: 11
 
       - name: Cache SonarCloud packages
-        uses: actions/cache@f4278025ab0f432ce369118909e46deec636f50c # tag=v3.0.6
+        uses: actions/cache@a7c34adf76222e77931dedbf4a45b2e4648ced19 # tag=v3.0.7
         with:
           path: ~/.sonar/cache
           key: ${{ runner.os }}-sonar
           restore-keys: ${{ runner.os }}-sonar
 
       - name: Cache for Incremental Analysis
-        uses: actions/cache@f4278025ab0f432ce369118909e46deec636f50c # tag=v3.0.6
+        uses: actions/cache@a7c34adf76222e77931dedbf4a45b2e4648ced19 # tag=v3.0.7
         with:
           path: sonar-cache
           key: ${{ runner.os }}-sonar
