@@ -14,13 +14,13 @@
 #   include "TSRM.h"
 #   define DE_G(v) TSRMG(de_globals_id, zend_de_globals*, v)
 #else
-#	define DE_G(v) (de_globals.v)
+#   define DE_G(v) (de_globals.v)
 #endif
 
 #if defined(__GNUC__) && __GNUC__ >= 4
-#	define DE_VISIBILITY_HIDDEN __attribute__((visibility("hidden")))
+#   define DE_VISIBILITY_HIDDEN __attribute__((visibility("hidden")))
 #else
-#	define DE_VISIBILITY_HIDDEN
+#   define DE_VISIBILITY_HIDDEN
 #endif
 
 #define phpext_disableeval_ptr  &disableeval_module_entry
@@ -35,17 +35,17 @@ typedef zend_op_array* (*de_zend_compile_string)(zend_string*, const char*, zend
 
 ZEND_BEGIN_MODULE_GLOBALS(de)
 #if PHP_VERSION_ID < 80000
-	zif_handler orig_create_function;
-	zif_handler orig_assert;
+    zif_handler orig_create_function;
+    zif_handler orig_assert;
 #endif
-	user_opcode_handler_t prev_eval_handler;
-	de_zend_compile_string zend_compile_string;
-	zend_long mode;
-	zend_bool enabled;
-	zend_bool aggressive;
-	zend_bool intercept_compile_string;
+    user_opcode_handler_t prev_eval_handler;
+    de_zend_compile_string zend_compile_string;
+    zend_long mode;
+    zend_bool enabled;
+    zend_bool aggressive;
+    zend_bool intercept_compile_string;
 #if PHP_VERSION_ID < 80000
-	zend_bool watch_assert;
+    zend_bool watch_assert;
 #endif
 ZEND_END_MODULE_GLOBALS(de)
 
