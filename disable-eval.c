@@ -146,7 +146,10 @@ static zend_op_array* zend_compile_string_override(
 #endif
 )
 {
-    static const eval_pattern_t patterns[] = {
+#ifndef ZTS
+    static
+#endif
+    const eval_pattern_t patterns[] = {
         { ZEND_STRL(" : eval()'d code"),            "eval()",                           &DE_G(enabled)      },
 #if PHP_VERSION_ID < 80000
         { ZEND_STRL(" : runtime-created function"), "create_function()",                &DE_G(enabled)      },
