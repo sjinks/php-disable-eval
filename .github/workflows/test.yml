@@ -20,11 +20,11 @@ jobs:
           - clang
           - gcc
         php:
-          - '7.3'
           - '7.4'
           - '8.0'
           - '8.1'
           - '8.2'
+          - '8.3'
     name: "Build and Test (PHP ${{ matrix.php }}, CC: ${{ matrix.compiler }})"
     runs-on: ubuntu-latest
     steps:
@@ -54,11 +54,11 @@ jobs:
       fail-fast: false
       matrix:
         php:
-          - '7.3'
           - '7.4'
           - '8.0'
           - '8.1'
           - '8.2'
+          - '8.3'
     name: "Build and Test (PHP ${{ matrix.php }}, Zend extensions enabled)"
     runs-on: ubuntu-latest
     steps:
