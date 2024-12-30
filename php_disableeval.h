@@ -4,7 +4,7 @@
 #include <main/php.h>
 
 #define PHP_DISABLEEVAL_EXTNAME     "disableeval"
-#define PHP_DISABLEEVAL_EXTVER      "0.1"
+#define PHP_DISABLEEVAL_EXTVER      "0.2.0"
 
 #ifdef HAVE_CONFIG_H
 #   include "config.h"
