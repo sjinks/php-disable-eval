@@ -8,15 +8,8 @@ static zend_module_entry de_module_entry;
 
 static void throw_exception(const char* function)
 {
-#if PHP_VERSION_ID >= 80000
     zend_string* message = zend_strpprintf(0, "%s is not allowed", function);
     zend_throw_error_exception(zend_ce_error_exception, message, 0, E_ERROR);
-#else
-    char* message;
-    zend_spprintf(&message, 0, "%s is not allowed", function);
-    zend_throw_error_exception(zend_ce_error_exception, message, 0, E_ERROR);
-    efree(message);
-#endif
 }
 
 static void scream(const char* function)
@@ -55,54 +48,8 @@ PHP_INI_BEGIN()
     STD_PHP_INI_BOOLEAN("disableeval.enabled",                  "1", PHP_INI_SYSTEM, OnUpdateBool, enabled,                  zend_de_globals, de_globals)
     STD_PHP_INI_BOOLEAN("disableeval.aggressive",               "0", PHP_INI_SYSTEM, OnUpdateBool, aggressive,               zend_de_globals, de_globals)
     STD_PHP_INI_BOOLEAN("disableeval.intercept_compile_string", "1", PHP_INI_SYSTEM, OnUpdateBool, intercept_compile_string, zend_de_globals, de_globals)
-#if PHP_VERSION_ID < 80000
-    STD_PHP_INI_BOOLEAN("disableeval.disallow_string_assert",   "1", PHP_INI_SYSTEM, OnUpdateBool, watch_assert,             zend_de_globals, de_globals)
-#endif
     STD_PHP_INI_ENTRY("disableeval.mode",                       "1", PHP_INI_SYSTEM, OnUpdateLong, mode,                     zend_de_globals, de_globals)
 PHP_INI_END()
-
-#if PHP_VERSION_ID < 80000
-static PHP_FUNCTION(create_function)
-{
-    complain("create_function()");
-    if (!EG(exception)) {
-        DE_G(orig_create_function)(INTERNAL_FUNCTION_PARAM_PASSTHRU);
-    }
-}
-
-static PHP_FUNCTION(assert)
-{
-    zval* assertion;
-    ZEND_PARSE_PARAMETERS_START(1, -1)
-        Z_PARAM_ZVAL(assertion)
-    ZEND_PARSE_PARAMETERS_END();
-
-    if (Z_TYPE_P(assertion) == IS_STRING) {
-        complain("assert() with a string argument");
-    }
-
-    if (!EG(exception)) {
-        DE_G(orig_assert)(INTERNAL_FUNCTION_PARAM_PASSTHRU);
-    }
-}
-
-static void patch_function(const char* name, size_t len, zif_handler* orig_handler, zif_handler new_handler)
-{
-    zend_function* f = zend_hash_str_find_ptr(CG(function_table), name, len);
-    if (f && f->type == ZEND_INTERNAL_FUNCTION && f->internal_function.handler) {
-        *orig_handler                = f->internal_function.handler;
-        f->internal_function.handler = new_handler;
-    }
-}
-
-static void unpatch_function(const char* name, size_t len, zif_handler orig_handler)
-{
-    zend_function* f = zend_hash_str_find_ptr(CG(function_table), name, len);
-    if (f) {
-        f->internal_function.handler = orig_handler;
-    }
-}
-#endif
 
 static int op_ZEND_INCLUDE_OR_EVAL(zend_execute_data* execute_data)
 {
@@ -134,15 +81,10 @@ typedef struct eval_pattern {
 } eval_pattern_t;
 
 static zend_op_array* zend_compile_string_override(
-#if PHP_VERSION_ID < 80000
-    zval* source_string,
-    char* filename
-#else
     zend_string* source_string,
     const char* filename
 #if PHP_VERSION_ID >= 80200
     , zend_compile_position position
-#endif
 #endif
 )
 {
@@ -150,12 +92,7 @@ static zend_op_array* zend_compile_string_override(
     static
 #endif
     const eval_pattern_t patterns[] = {
-        { ZEND_STRL(" : eval()'d code"),            "eval()",                           &DE_G(enabled)      },
-#if PHP_VERSION_ID < 80000
-        { ZEND_STRL(" : runtime-created function"), "create_function()",                &DE_G(enabled)      },
-        { ZEND_STRL(" : assert code"),              "assert() with a string argument",  &DE_G(watch_assert) },
-        { ZEND_STRL(" : mbregex replace"),          "mb_ereg_replace() with 'e' flag",  &DE_G(enabled)      },
-#endif
+        { ZEND_STRL(" : eval()'d code"), "eval()", &DE_G(enabled) },
         { NULL, 0, NULL, NULL }
     };
 
@@ -204,14 +141,6 @@ static PHP_MINIT_FUNCTION(de)
             DE_G(zend_compile_string) = zend_compile_string;
             zend_compile_string       = zend_compile_string_override;
         }
-#if PHP_VERSION_ID < 80000
-        else {
-            patch_function(ZEND_STRL("create_function"), &DE_G(orig_create_function), PHP_FN(create_function));
-            if (DE_G(watch_assert)) {
-                patch_function(ZEND_STRL("assert"), &DE_G(orig_assert), PHP_FN(assert));
-            }
-        }
-#endif
     }
 
     REGISTER_LONG_CONSTANT("DISABLEEVAL_MODE_THROW",   MODE_THROW,   CONST_CS | CONST_PERSISTENT);
@@ -232,17 +161,6 @@ static PHP_MSHUTDOWN_FUNCTION(de)
         if (DE_G(intercept_compile_string)) {
             zend_compile_string = DE_G(zend_compile_string);
         }
-#if PHP_VERSION_ID < 80000
-        else {
-            if (DE_G(orig_create_function)) {
-                unpatch_function(ZEND_STRL("create_function"), DE_G(orig_create_function));
-            }
-
-            if (DE_G(orig_assert)) {
-                unpatch_function(ZEND_STRL("assert"), DE_G(orig_assert));
-            }
-        }
-#endif
     }
 
     return SUCCESS;
@@ -250,10 +168,6 @@ static PHP_MSHUTDOWN_FUNCTION(de)
 
 static PHP_GINIT_FUNCTION(de)
 {
-#if PHP_VERSION_ID < 80000
-    de_globals->orig_create_function = NULL;
-    de_globals->orig_assert          = NULL;
-#endif
     de_globals->zend_compile_string  = NULL;
     de_globals->prev_eval_handler    = NULL;
 }
