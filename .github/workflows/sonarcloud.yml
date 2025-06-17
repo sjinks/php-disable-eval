@@ -21,13 +21,14 @@ jobs:
           fetch-depth: 0
 
       - name: Set up PHP
-        uses: shivammathur/setup-php@9e72090525849c5e82e596468b86eb55e9cc5401 # 2.32.0
+        uses: shivammathur/setup-php@0f7f1d08e3e32076e51cae65eb0b0c871405b16e # 2.34.1
         with:
           php-version: ${{ env.PHP_VERSION }}
           tools: none
+          coverage: none
 
-      - name: Install sonar-scanner and build-wrapper
-        uses: SonarSource/sonarcloud-github-c-cpp@44cc4d3d487fbc35e5c29b0a9d717be218d3a0e8 # v3.2.0
+      - name: Install Build Wrapper
+        uses: SonarSource/sonarqube-scan-action/install-build-wrapper@2500896589ef8f7247069a56136f8dc177c27ccf # v5.2.0
 
       - name: Run build-wrapper
         run: |
@@ -40,10 +41,9 @@ jobs:
           TEST_PHP_EXECUTABLE: "/usr/bin/php"
 
       - name: Run sonar-scanner
+        uses: SonarSource/sonarqube-scan-action@2500896589ef8f7247069a56136f8dc177c27ccf # v5.2.0
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-        run: |
-          sonar-scanner \
-            -Dsonar.cfamily.compile-commands="${{ env.BUILD_WRAPPER_OUT_DIR }}/compile_commands.json" \
-            -Dsonar.cfamily.gcov.reportsPath=$(pwd)
+        with:
+          args: >
+            -Dsonar.cfamily.compile-commands="${{ env.BUILD_WRAPPER_OUT_DIR }}/compile_commands.json" -Dsonar.cfamily.gcov.reportsPath=.
