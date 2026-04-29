@@ -28,7 +28,7 @@ jobs:
           coverage: none
 
       - name: Install Build Wrapper
-        uses: SonarSource/sonarqube-scan-action/install-build-wrapper@a31c9398be7ace6bbfaf30c0bd5d415f843d45e9 # v7.0.0
+        uses: SonarSource/sonarqube-scan-action/install-build-wrapper@59db25f34e16620e48ab4bb9e4a5dce155cb5432 # v8
 
       - name: Run build-wrapper
         run: |
@@ -41,7 +41,7 @@ jobs:
           TEST_PHP_EXECUTABLE: "/usr/bin/php"
 
       - name: Run sonar-scanner
-        uses: SonarSource/sonarqube-scan-action@a31c9398be7ace6bbfaf30c0bd5d415f843d45e9 # v7.0.0
+        uses: SonarSource/sonarqube-scan-action@59db25f34e16620e48ab4bb9e4a5dce155cb5432 # v8
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         with:
